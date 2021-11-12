@@ -1,13 +1,11 @@
-using UnityEngine;
-using System.Linq;
-using UnityEngine.Rendering.Universal;
 using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 
 namespace UnityEditor.Rendering.Universal
 {
-    class SerializedUniversalRenderPipelineGlobalSettings
+    class SerializedUniversalRenderPipelineGlobalSettings : ISerializedRenderPipelineGlobalSettings
     {
-        public SerializedObject serializedObject;
+        public SerializedObject serializedObject { get; }
         private List<UniversalRenderPipelineGlobalSettings> serializedSettings = new List<UniversalRenderPipelineGlobalSettings>();
 
         public SerializedProperty lightLayerName0;
