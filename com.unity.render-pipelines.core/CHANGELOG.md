@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Context menu on Volume Parameters to restore them to their default values.
 - Added DebugFrameTiming class that can be used by render pipelines to display CPU/GPU frame timings and bottlenecks in Rendering Debugger.
 - Added new DebugUI widget types: ProgressBarValue and ValueTuple
-- Added common support code for FSR
+- Added common support code for FSR.
+- Added new `RenderPipelineGlobalSettingsProvider` to help adding a settings panel for editing global settings.
 
 ## [13.1.0] - 2021-09-24
 

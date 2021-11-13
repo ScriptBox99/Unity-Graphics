@@ -5,7 +5,7 @@ namespace UnityEditor.Rendering.Universal
 {
     class SerializedUniversalRenderPipelineGlobalSettings
     {
-        public SerializedObject serializedObject { get; }
+        public SerializedObject serializedObject;
         private List<UniversalRenderPipelineGlobalSettings> serializedSettings = new List<UniversalRenderPipelineGlobalSettings>();
 
         public SerializedProperty lightLayerName0;
