@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
-using UnityEditorInternal;
-using System.Linq;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
-    internal partial class HDGlobalSettingsPanelIMGUI
+    internal partial class HDRenderPipelineGlobalSettingsUI
     {
         internal class Styles
         {

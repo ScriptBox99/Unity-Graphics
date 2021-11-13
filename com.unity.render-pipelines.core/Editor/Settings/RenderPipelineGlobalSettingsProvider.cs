@@ -9,30 +9,35 @@ namespace UnityEditor.Rendering
     /// </summary>
     /// <typeparam name="TRenderPipeline"><see cref="RenderPipeline"/></typeparam>
     /// <typeparam name="TGlobalSettings"><see cref="RenderPipelineGlobalSettings"/></typeparam>
-    /// <typeparam name="TSerializedSettings"><see cref="ISerializedRenderPipelineGlobalSettings"/></typeparam>
-    public abstract class RenderPipelineGlobalSettingsProvider<TRenderPipeline, TGlobalSettings, TSerializedSettings> : SettingsProvider
+    public abstract class RenderPipelineGlobalSettingsProvider<TRenderPipeline, TGlobalSettings> : SettingsProvider
         where TRenderPipeline : RenderPipeline
         where TGlobalSettings : RenderPipelineGlobalSettings
-        where TSerializedSettings : ISerializedRenderPipelineGlobalSettings
     {
         static class Styles
         {
-            public static readonly string warningGlobalSettingsMissing = "Select a valid {0} asset. There might be issues in rendering.";
-            public static readonly string warningSRPNotActive = "Current Render Pipeline is not {0}. Check the settings: Graphics > Scriptable Render Pipeline Settings, Quality > Render Pipeline Asset.";
+            public static readonly string warningGlobalSettingsMissing = "Select a valid {0} asset.";
+            public static readonly string warningSRPNotActive = "Current Render Pipeline is {0}. Check the settings: Graphics > Scriptable Render Pipeline Settings, Quality > Render Pipeline Asset.";
+            public static readonly string settingNullRPSettings = "Are you sure you want to unregister the Render Pipeline Settings? There might be issues on rendering.";
 
             public static readonly GUIContent newAssetButtonLabel = EditorGUIUtility.TrTextContent("New", "Create a Global Settings asset in the Assets folder.");
             public static readonly GUIContent cloneAssetButtonLabel = EditorGUIUtility.TrTextContent("Clone", "Clone a Global Settings asset in the Assets folder.");
         }
 
         Editor m_Editor;
-        ISerializedRenderPipelineGlobalSettings m_SerializedSettings;
-        TGlobalSettings m_GlobalSettings;
+        RenderPipelineGlobalSettings renderPipelineSettings => GraphicsSettings.GetSettingsForRenderPipeline<TRenderPipeline>();
 
-        TGlobalSettings cachedSettings => GraphicsSettings.GetSettingsForRenderPipeline<TRenderPipeline>() as TGlobalSettings;
-
-        public RenderPipelineGlobalSettingsProvider(string v, SettingsScope project)
-            : base(v, project)
+        public RenderPipelineGlobalSettingsProvider(string v)
+            : base(v, SettingsScope.Project)
         {
+        }
+
+        /// <summary>
+        /// Method called when the title bar is being rendered
+        /// </summary>
+        public override void OnTitleBarGUI()
+        {
+            if (GUILayout.Button(CoreEditorStyles.iconHelp, CoreEditorStyles.iconHelpStyle))
+                Help.BrowseURL(Help.GetHelpURLForObject(renderPipelineSettings));
         }
 
         void DestroyEditor()
@@ -78,19 +83,7 @@ namespace UnityEditor.Rendering
         /// <summary>
         /// Clones the <see cref="RenderPipelineGlobalSettings"/> asset
         /// </summary>
-        protected abstract void Clone(TGlobalSettings src, bool activateAsset);
-
-        /// <summary>
-        /// Updates the Graphics settings with the selected <see cref="RenderPipelineGlobalSettings"/> asset
-        /// </summary>
-        protected abstract void UpdateGraphicsSettings(TGlobalSettings newSettings);
-
-        /// <summary>
-        /// Refreshes the settings in case they are null
-        /// </summary>
-        /// <param name="settingsSerialized"><see cref="RenderPipelineGlobalSettings"/></param>
-        /// <param name="serializedSettings"><see cref="ISerializedRenderPipelineGlobalSettings"/></param>
-        protected abstract void Refresh(ref TGlobalSettings settingsSerialized, ref ISerializedRenderPipelineGlobalSettings serializedSettings);
+        protected abstract void Clone(RenderPipelineGlobalSettings src, bool activateAsset);
 
         /// <summary>
         /// Method called to render the IMGUI of the settings provider
@@ -98,53 +91,25 @@ namespace UnityEditor.Rendering
         /// <param name="searchContext">The search content</param>
         public override void OnGUI(string searchContext)
         {
-            // When the asset being serialized has been deleted before its reconstruction
-            if (m_SerializedSettings != null && m_SerializedSettings.serializedObject.targetObject == null)
-            {
-                m_SerializedSettings = null;
-                m_GlobalSettings = null;
-                m_Editor = null;
-            }
-
-            if (m_SerializedSettings == null || m_GlobalSettings != cachedSettings)
-            {
-                if (cachedSettings != null)
-                {
-                    Refresh(ref m_GlobalSettings, ref m_SerializedSettings);
-                }
-                else
-                {
-                    m_SerializedSettings = null;
-                    m_GlobalSettings = null;
-                    m_Editor = null;
-                }
-            }
-            else if (m_GlobalSettings != null && m_SerializedSettings != null)
-            {
-                m_SerializedSettings.serializedObject.Update();
-            }
-
             using (new SettingsProviderGUIScope())
             {
-                DrawAssetSelection();
-
-                if (!(RenderPipelineManager.currentPipeline is TRenderPipeline))
-                {
-                    EditorGUILayout.HelpBox(string.Format(Styles.warningSRPNotActive, ObjectNames.NicifyVariableName(typeof(TRenderPipeline).Name)), MessageType.Warning);
-                }
-
-                if (m_GlobalSettings == null)
+                if (renderPipelineSettings == null)
                 {
                     CoreEditorUtils.DrawFixMeBox(string.Format(Styles.warningGlobalSettingsMissing, ObjectNames.NicifyVariableName(typeof(TGlobalSettings).Name)), () => Ensure());
                 }
-                else if(m_SerializedSettings != null)
+                else
                 {
+                    DrawAssetSelection();
+
+                    if (RenderPipelineManager.currentPipeline != null && !(RenderPipelineManager.currentPipeline is TRenderPipeline))
+                    {
+                        EditorGUILayout.HelpBox(string.Format(Styles.warningSRPNotActive, ObjectNames.NicifyVariableName(RenderPipelineManager.currentPipeline.GetType().Name)), MessageType.Warning);
+                    }
+
                     if (m_Editor == null)
-                        m_Editor = Editor.CreateEditor(m_SerializedSettings.serializedObject.targetObject);
+                        m_Editor = Editor.CreateEditor(renderPipelineSettings);
 
                     m_Editor.OnInspectorGUI();
-
-                    m_SerializedSettings.serializedObject?.ApplyModifiedProperties();
                 }
             }
 
@@ -155,13 +120,20 @@ namespace UnityEditor.Rendering
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUI.BeginChangeCheck();
-                var newAsset = (TGlobalSettings)EditorGUILayout.ObjectField(m_GlobalSettings, typeof(TGlobalSettings), false);
-                if (EditorGUI.EndChangeCheck())
+                var newSettings = (TGlobalSettings)EditorGUILayout.ObjectField(renderPipelineSettings, typeof(TGlobalSettings), false);
+
+                if (renderPipelineSettings != newSettings)
                 {
-                    UpdateGraphicsSettings(newAsset);
-                    if (m_GlobalSettings != null && !m_GlobalSettings.Equals(null))
-                        EditorUtility.SetDirty(m_GlobalSettings);
+                    if (newSettings != null)
+                        GraphicsSettings.RegisterRenderPipelineSettings<TRenderPipeline>(newSettings);
+                    else
+                    {
+                        if(EditorUtility.DisplayDialog($"Invalid {ObjectNames.NicifyVariableName(typeof(TGlobalSettings).Name)}", Styles.settingNullRPSettings, "Yes", "No"))
+                            GraphicsSettings.UnregisterRenderPipelineSettings<TRenderPipeline>();
+                    }
+
+                    if (renderPipelineSettings != null && !renderPipelineSettings.Equals(null))
+                        EditorUtility.SetDirty(renderPipelineSettings);
                 }
 
                 if (GUILayout.Button(Styles.newAssetButtonLabel, GUILayout.Width(45), GUILayout.Height(18)))
@@ -170,10 +142,10 @@ namespace UnityEditor.Rendering
                 }
 
                 bool guiEnabled = GUI.enabled;
-                GUI.enabled = guiEnabled && (m_GlobalSettings != null);
+                GUI.enabled = guiEnabled && (renderPipelineSettings != null);
                 if (GUILayout.Button(Styles.cloneAssetButtonLabel, GUILayout.Width(45), GUILayout.Height(18)))
                 {
-                    Clone(m_GlobalSettings, activateAsset: true);
+                    Clone(renderPipelineSettings, activateAsset: true);
                 }
                 GUI.enabled = guiEnabled;
             }

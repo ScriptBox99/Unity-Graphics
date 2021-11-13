@@ -1,39 +1,26 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace UnityEditor.Rendering.Universal
 {
-    class UniversalGlobalSettingsPanelProvider : RenderPipelineGlobalSettingsProvider<
-        UniversalRenderPipeline,
-        UniversalRenderPipelineGlobalSettings,
-        SerializedUniversalRenderPipelineGlobalSettings>
+    class UniversalGlobalSettingsPanelProvider : RenderPipelineGlobalSettingsProvider<UniversalRenderPipeline,UniversalRenderPipelineGlobalSettings>
     {
-        public UniversalGlobalSettingsPanelProvider(string v, SettingsScope project)
-            : base(v, project)
+        public UniversalGlobalSettingsPanelProvider()
+            : base("Project/Graphics/URP Global Settings")
         {
+            keywords = GetSearchKeywordsFromGUIContentProperties<UniversalRenderPipelineGlobalSettingsUI.Styles>().ToArray();
         }
 
         [SettingsProvider]
-        public static SettingsProvider CreateSettingsProvider()
-        {
-            return new UniversalGlobalSettingsPanelProvider("Project/Graphics/URP Global Settings", SettingsScope.Project)
-            {
-                keywords = SettingsProvider.GetSearchKeywordsFromGUIContentProperties<UniversalRenderPipelineGlobalSettingsUI.Styles>().ToArray(),
-            };
-        }
+        public static SettingsProvider CreateSettingsProvider() => new UniversalGlobalSettingsPanelProvider();
 
         #region RenderPipelineGlobalSettingsProvider
 
-        public override void OnTitleBarGUI()
+        protected override void Clone(RenderPipelineGlobalSettings src, bool activateAsset)
         {
-            if (GUILayout.Button(CoreEditorStyles.iconHelp, CoreEditorStyles.iconHelpStyle))
-                Help.BrowseURL(Documentation.GetPageLink("URP-Global-Settings"));
-        }
-
-        protected override void Clone(UniversalRenderPipelineGlobalSettings src, bool activateAsset)
-        {
-            UniversalGlobalSettingsCreator.Clone(src, activateAsset: activateAsset);
+            UniversalGlobalSettingsCreator.Clone(src as UniversalRenderPipelineGlobalSettings, activateAsset: activateAsset);
         }
 
         protected override void Create(bool useProjectSettingsFolder, bool activateAsset)
@@ -44,18 +31,6 @@ namespace UnityEditor.Rendering.Universal
         protected override void Ensure()
         {
             UniversalRenderPipelineGlobalSettings.Ensure();
-        }
-
-        protected override void Refresh(ref UniversalRenderPipelineGlobalSettings settingsSerialized, ref ISerializedRenderPipelineGlobalSettings serializedSettings)
-        {
-            settingsSerialized = UniversalRenderPipelineGlobalSettings.Ensure();
-            var serializedObject = new SerializedObject(settingsSerialized);
-            serializedSettings = new SerializedUniversalRenderPipelineGlobalSettings(serializedObject);
-        }
-
-        protected override void UpdateGraphicsSettings(UniversalRenderPipelineGlobalSettings newSettings)
-        {
-            UniversalRenderPipelineGlobalSettings.UpdateGraphicsSettings(newSettings);
         }
         #endregion
     }
