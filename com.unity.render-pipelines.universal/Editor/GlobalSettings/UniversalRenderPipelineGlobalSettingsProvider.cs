@@ -5,7 +5,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace UnityEditor.Rendering.Universal
 {
-    class UniversalGlobalSettingsPanelProvider : RenderPipelineGlobalSettingsProvider<UniversalRenderPipeline,UniversalRenderPipelineGlobalSettings>
+    class UniversalGlobalSettingsPanelProvider : RenderPipelineGlobalSettingsProvider<UniversalRenderPipeline, UniversalRenderPipelineGlobalSettings>
     {
         public UniversalGlobalSettingsPanelProvider()
             : base("Project/Graphics/URP Global Settings")

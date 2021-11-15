@@ -128,7 +128,7 @@ namespace UnityEditor.Rendering
                         GraphicsSettings.RegisterRenderPipelineSettings<TRenderPipeline>(newSettings);
                     else
                     {
-                        if(EditorUtility.DisplayDialog($"Invalid {ObjectNames.NicifyVariableName(typeof(TGlobalSettings).Name)}", Styles.settingNullRPSettings, "Yes", "No"))
+                        if (EditorUtility.DisplayDialog($"Invalid {ObjectNames.NicifyVariableName(typeof(TGlobalSettings).Name)}", Styles.settingNullRPSettings, "Yes", "No"))
                             GraphicsSettings.UnregisterRenderPipelineSettings<TRenderPipeline>();
                     }
 

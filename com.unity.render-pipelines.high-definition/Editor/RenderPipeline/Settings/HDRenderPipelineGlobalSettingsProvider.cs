@@ -5,7 +5,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
-    class HDRenderPipelineGlobalSettingsPanelProvider : RenderPipelineGlobalSettingsProvider<HDRenderPipeline,HDRenderPipelineGlobalSettings>
+    class HDRenderPipelineGlobalSettingsPanelProvider : RenderPipelineGlobalSettingsProvider<HDRenderPipeline, HDRenderPipelineGlobalSettings>
     {
         public HDRenderPipelineGlobalSettingsPanelProvider()
             : base("Project/Graphics/HDRP Global Settings")
