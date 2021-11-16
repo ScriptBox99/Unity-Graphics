@@ -42,6 +42,7 @@ namespace UnityEditor.Rendering.HighDefinition
         public SerializedProperty decalLayerName7;
 
         public SerializedProperty shaderVariantLogLevel;
+        public SerializedProperty exportShaderVariants;
         public SerializedProperty lensAttenuation;
         public SerializedProperty colorGradingSpace;
         public SerializedProperty diffusionProfileSettingsList;
@@ -131,6 +132,7 @@ namespace UnityEditor.Rendering.HighDefinition
             decalLayerName7 = serializedObject.Find((HDRenderPipelineGlobalSettings s) => s.decalLayerName7);
 
             shaderVariantLogLevel = serializedObject.Find((HDRenderPipelineGlobalSettings s) => s.shaderVariantLogLevel);
+            exportShaderVariants = serializedObject.Find((HDRenderPipelineGlobalSettings s) => s.exportShaderVariants);
 
             lensAttenuation = serializedObject.FindProperty("lensAttenuationMode");
             colorGradingSpace = serializedObject.Find((HDRenderPipelineGlobalSettings s) => s.colorGradingSpace);

@@ -113,7 +113,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 assetToUpgrade.decalLayerName7 = oldAsset.currentPlatformRenderPipelineSettings.m_ObsoleteDecalLayerName7;
             }
 
-            assetToUpgrade.shaderVariantLogLevel = oldAsset.m_ObsoleteShaderVariantLogLevel;
+            assetToUpgrade.shaderVariantLogLevel = (ShaderVariantLogLevel) oldAsset.m_ObsoleteShaderVariantLogLevel;
             assetToUpgrade.lensAttenuationMode = oldAsset.m_ObsoleteLensAttenuation;
 
             // we need to make sure the old diffusion profile had time to upgrade before moving it away

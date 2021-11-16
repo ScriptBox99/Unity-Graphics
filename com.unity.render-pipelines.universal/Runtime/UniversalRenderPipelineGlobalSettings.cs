@@ -10,7 +10,7 @@ namespace UnityEngine.Rendering.Universal
     /// - light layer names
     /// </summary>
     [URPHelpURL("URP-Global-Settings")]
-    partial class UniversalRenderPipelineGlobalSettings : RenderPipelineGlobalSettings, ISerializationCallbackReceiver
+    partial class UniversalRenderPipelineGlobalSettings : RenderPipelineGlobalSettings, ISerializationCallbackReceiver, IShaderVariantsSettings
     {
         #region Version system
 
@@ -342,6 +342,26 @@ namespace UnityEngine.Rendering.Universal
         /// Controls whether strip off variants if the feature is enabled.
         /// </summary>
         public bool stripUnusedVariants { get => m_StripUnusedVariants; set { m_StripUnusedVariants = value; } }
+
+        #endregion
+
+        #region IShaderVariantsSettings
+
+        [SerializeField]
+        internal UnityEngine.Rendering.ShaderVariantLogLevel m_ShaderVariantLogLevel = UnityEngine.Rendering.ShaderVariantLogLevel.Disabled;
+
+        /// <summary>
+        /// Specifies the level of the logging for shader variants
+        /// </summary>
+        public UnityEngine.Rendering.ShaderVariantLogLevel shaderVariantLogLevel { get => m_ShaderVariantLogLevel; set => m_ShaderVariantLogLevel = value; }
+
+        [SerializeField]
+        internal bool m_ExportShaderVariants = true;
+
+        /// <summary>
+        /// Specifies if the stripping of the shaders that variants needs to be exported
+        /// </summary>
+        public bool exportShaderVariants { get => m_ExportShaderVariants; set => m_ExportShaderVariants = true; }
 
         #endregion
     }

@@ -65,6 +65,8 @@ namespace UnityEditor.Rendering.HighDefinition
                 CED.Group((serialized, owner) => EditorGUILayout.Space()),
                 MiscSection,
                 CED.Group((serialized, owner) => EditorGUILayout.Space()),
+                ShaderStrippingSection,
+                CED.Group((serialized, owner) => EditorGUILayout.Space()),
                 ResourcesSection
             );
         }
@@ -473,7 +475,15 @@ namespace UnityEditor.Rendering.HighDefinition
             CED.Group(DrawMiscSettings),
             CED.Group((serialized, owner) => EditorGUILayout.Space())
         );
-        static void DrawMiscSettings(SerializedHDRenderPipelineGlobalSettings serialized, Editor owner)
+
+        static readonly CED.IDrawer ShaderStrippingSection = CED.Group(
+            CED.Group((serialized, owner) => CoreEditorUtils.DrawSectionHeader(Styles.shaderStrippingSettingsLabel)),
+            CED.Group((serialized, owner) => EditorGUILayout.Space()),
+            CED.Group(DrawShaderStrippingSettings),
+            CED.Group((serialized, owner) => EditorGUILayout.Space())
+        );
+
+        static void DrawShaderStrippingSettings(SerializedHDRenderPipelineGlobalSettings serialized, Editor owner)
         {
             var oldWidth = EditorGUIUtility.labelWidth;
             EditorGUIUtility.labelWidth = Styles.labelWidth;
@@ -481,6 +491,18 @@ namespace UnityEditor.Rendering.HighDefinition
             using (new EditorGUI.IndentLevelScope())
             {
                 EditorGUILayout.PropertyField(serialized.shaderVariantLogLevel, Styles.shaderVariantLogLevelLabel);
+                EditorGUILayout.PropertyField(serialized.exportShaderVariants, Styles.exportShaderVariantsLabel);
+            }
+            EditorGUIUtility.labelWidth = oldWidth;
+        }
+
+        static void DrawMiscSettings(SerializedHDRenderPipelineGlobalSettings serialized, Editor owner)
+        {
+            var oldWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = Styles.labelWidth;
+
+            using (new EditorGUI.IndentLevelScope())
+            {
                 EditorGUILayout.PropertyField(serialized.lensAttenuation, Styles.lensAttenuationModeContentLabel);
                 EditorGUILayout.PropertyField(serialized.colorGradingSpace, Styles.colorGradingSpaceContentLabel);
                 EditorGUILayout.PropertyField(serialized.rendererListCulling, Styles.rendererListCulling);
