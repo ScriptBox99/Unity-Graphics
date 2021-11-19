@@ -38,7 +38,8 @@ namespace UnityEditor.Rendering.Universal
                     if (changed.changed)
                     {
                         serialized.serializedObject?.ApplyModifiedProperties();
-                        (serialized.serializedObject.targetObject as UniversalRenderPipelineGlobalSettings).UpdateRenderingLayerNames();
+                        if (serialized.serializedObject?.targetObject is UniversalRenderPipelineGlobalSettings urpGlobalSettings)
+                            urpGlobalSettings.UpdateRenderingLayerNames();
                     }
                 }
             }

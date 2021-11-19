@@ -190,7 +190,10 @@ namespace UnityEditor.Rendering.HighDefinition
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Space(5);
+                var labelWidth = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = 100;
                 serialized.m_DiffusionProfileUI.OnGUI(serialized.diffusionProfileSettingsList);
+                EditorGUIUtility.labelWidth = labelWidth;
             }
         }
 

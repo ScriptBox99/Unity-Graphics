@@ -220,7 +220,6 @@ namespace UnityEditor.Rendering.HighDefinition
 
         void DrawDiffusionProfileElement(SerializedProperty element, Rect rect, int index)
         {
-            EditorGUI.BeginChangeCheck();
             EditorGUI.ObjectField(rect, element, EditorGUIUtility.TrTextContent("Profile " + index));
         }
     }
