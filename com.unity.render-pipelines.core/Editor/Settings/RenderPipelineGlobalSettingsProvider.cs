@@ -17,10 +17,11 @@ namespace UnityEditor.Rendering
         {
             public static readonly string warningGlobalSettingsMissing = "Select a valid {0} asset.";
             public static readonly string warningSRPNotActive = "Current Render Pipeline is {0}. Check the settings: Graphics > Scriptable Render Pipeline Settings, Quality > Render Pipeline Asset.";
-            public static readonly string settingNullRPSettings = "Are you sure you want to unregister the Render Pipeline Settings? There might be issues on rendering.";
+            public static readonly string settingNullRPSettings = "Are you sure you want to unregister the Render Pipeline Settings? There might be issues with rendering.";
 
             public static readonly GUIContent newAssetButtonLabel = EditorGUIUtility.TrTextContent("New", "Create a Global Settings asset in the Assets folder.");
             public static readonly GUIContent cloneAssetButtonLabel = EditorGUIUtility.TrTextContent("Clone", "Clone a Global Settings asset in the Assets folder.");
+            public static readonly GUILayoutOption[] buttonOptions = new GUILayoutOption[] { GUILayout.Width(45), GUILayout.Height(18) };
         }
 
         Editor m_Editor;
@@ -138,14 +139,14 @@ namespace UnityEditor.Rendering
                         EditorUtility.SetDirty(renderPipelineSettings);
                 }
 
-                if (GUILayout.Button(Styles.newAssetButtonLabel, GUILayout.Width(45), GUILayout.Height(18)))
+                if (GUILayout.Button(Styles.newAssetButtonLabel, Styles.buttonOptions))
                 {
                     Create(useProjectSettingsFolder: true, activateAsset: true);
                 }
 
                 bool guiEnabled = GUI.enabled;
                 GUI.enabled = guiEnabled && (renderPipelineSettings != null);
-                if (GUILayout.Button(Styles.cloneAssetButtonLabel, GUILayout.Width(45), GUILayout.Height(18)))
+                if (GUILayout.Button(Styles.cloneAssetButtonLabel, Styles.buttonOptions))
                 {
                     Clone(renderPipelineSettings, activateAsset: true);
                 }
