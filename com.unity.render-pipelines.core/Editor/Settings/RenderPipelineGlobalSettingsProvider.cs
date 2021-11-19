@@ -118,6 +118,8 @@ namespace UnityEditor.Rendering
 
         void DrawAssetSelection()
         {
+            var oldRenderPipelineSettings = renderPipelineSettings;
+
             using (new EditorGUILayout.HorizontalScope())
             {
                 var newSettings = (TGlobalSettings)EditorGUILayout.ObjectField(renderPipelineSettings, typeof(TGlobalSettings), false);
@@ -149,6 +151,9 @@ namespace UnityEditor.Rendering
                 }
                 GUI.enabled = guiEnabled;
             }
+
+            if (oldRenderPipelineSettings != renderPipelineSettings)
+                m_Editor = null;
         }
     }
 }
