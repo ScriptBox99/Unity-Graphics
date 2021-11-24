@@ -77,18 +77,23 @@ URP_PostPro_OSX_Metal_playmode_mono_Linear_trunk:
                 set -x
                 export GIT_REVISIONDATE=`git rev-parse HEAD | git show -s --format=%cI` && echo $GIT_REVISIONDATE
 
+                git config --global user.email "local@bokken.com"
+                git config --global user.name "local"
+
                 # previous launch command:
                 echo "export UPM_REGISTRY=https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-candidates;  ~/Graphics/utr  --artifacts_path=/Users/bokken/Graphics/TestProjects/UniversalGraphicsTest_PostPro/test-results --editor-location=/Users/bokken/.Editor --extra-editor-arg="-colorspace=Linear" --scripting-backend=Mono2x --suite=playmode --testfilter=$TEST_FILTER --testproject=/Users/bokken/Graphics/TestProjects/UniversalGraphicsTest_PostPro --zero-tests-are-ok=1 " > command
                 cat command
-
                 ssh -i ~/.ssh/id_rsa_macmini bokken@$BOKKEN_DEVICE_IP 'cd Graphics && git add . && git commit -m "base"'
+
                 ssh -i ~/.ssh/id_rsa_macmini bokken@$BOKKEN_DEVICE_IP "$(cat command)"
                 UTR_RESULT=$?
+
                 scp -i ~/.ssh/id_rsa_macmini -r bokken@$BOKKEN_DEVICE_IP:/Users/bokken/Graphics/TestProjects/UniversalGraphicsTest_PostPro/test-results TestProjects/UniversalGraphicsTest_PostPro/test-results/r0
                 ssh -i ~/.ssh/id_rsa_macmini bokken@$BOKKEN_DEVICE_IP 'cd Graphics && git add . && git commit -m "run 0"'
 
                 ssh -i ~/.ssh/id_rsa_macmini bokken@$BOKKEN_DEVICE_IP "$(cat command)"
                 echo $?
+
                 scp -i ~/.ssh/id_rsa_macmini -r bokken@$BOKKEN_DEVICE_IP:/Users/bokken/Graphics/TestProjects/UniversalGraphicsTest_PostPro/test-results TestProjects/UniversalGraphicsTest_PostPro
                 ssh -i ~/.ssh/id_rsa_macmini bokken@$BOKKEN_DEVICE_IP 'cd Graphics && git add . && git commit -m "run 1"'
 
