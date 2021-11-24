@@ -19,7 +19,6 @@ RW_TEXTURE2D_X(uint, _VisBufferFeatureTileOutput);
 
 float4 _VisBufferTileSize;
 
-#define TILE_SIZE_FPTL 16
 [numthreads(GROUP_SIZE, GROUP_SIZE, 1)]
 void FeatureTileClassifyReduction(uint3 id : SV_DispatchThreadID)
 {

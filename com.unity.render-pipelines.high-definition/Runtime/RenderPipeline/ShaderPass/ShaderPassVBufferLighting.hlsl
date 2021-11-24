@@ -49,7 +49,6 @@ Varyings Vert(Attributes inputMesh)
 {
     Varyings output;
     ZERO_INITIALIZE(Varyings, output);
-    output.positionCS = float4(0.0,0.0,0.0,0.0)/0.0;
 
 #ifdef DOTS_INSTANCING_ON
     UNITY_SETUP_INSTANCE_ID(inputMesh);
@@ -75,21 +74,18 @@ Varyings Vert(Attributes inputMesh)
     uint bucketIDMask = Visibility::LoadBucketTile(tileCoords);
     uint2 matMinMax = Visibility::LoadMaterialTile(tileCoords);
     output.lightAndMaterialFeatures = Visibility::LoadFeatureTile(tileCoords);
+    uint currentTileCategory = Visibility::GetLightTileCategory(output.lightAndMaterialFeatures);
 
-    uint featureFlags = 0;
+    uint shaderTileCategory = 0;
     #if defined(VARIANT_DIR_ENV)
-    featureFlags = (LIGHTFEATUREFLAGS_SKY | LIGHTFEATUREFLAGS_DIRECTIONAL | LIGHTFEATUREFLAGS_ENV | MATERIAL_FEATURE_MASK_FLAGS);
+    shaderTileCategory = LIGHTVBUFFERTILECATEGORY_ENV;
+    #elif defined(VARIANT_DIR_PUNCTUAL_ENV)
+    shaderTileCategory = LIGHTVBUFFERTILECATEGORY_ENV_PUNCTUAL;
+    #elif defined(VARIANT_DIR_PUNCTUAL_AREA_ENV)
+    shaderTileCategory = LIGHTVBUFFERTILECATEGORY_EVERYTHING;
     #endif
 
-    #if defined(VARIANT_DIR_PUNCTUAL_ENV)
-    featureFlags = (LIGHTFEATUREFLAGS_SKY | LIGHTFEATUREFLAGS_DIRECTIONAL | LIGHTFEATUREFLAGS_PUNCTUAL | LIGHTFEATUREFLAGS_ENV | MATERIAL_FEATURE_MASK_FLAGS);
-    #endif
-
-    #if defined(VARIANT_DIR_PUNCTUAL_AREA_ENV)
-    featureFlags = (LIGHTFEATUREFLAGS_SKY | LIGHTFEATUREFLAGS_DIRECTIONAL | LIGHTFEATUREFLAGS_PUNCTUAL | LIGHTFEATUREFLAGS_ENV | LIGHTFEATUREFLAGS_AREA | MATERIAL_FEATURE_MASK_FLAGS);
-    #endif
-
-    if (((getCurrentMaterialGPUKey() & bucketIDMask) != 0) && (getCurrentMaterialGPUKey() >= matMinMax.x && getCurrentMaterialGPUKey() <= matMinMax.y)  && ((output.lightAndMaterialFeatures & featureFlags) != 0))
+    if (((getCurrentMaterialGPUKey() & bucketIDMask) != 0) && (getCurrentMaterialGPUKey() >= matMinMax.x && getCurrentMaterialGPUKey() <= matMinMax.y) && shaderTileCategory == currentTileCategory)
     {
         output.positionCS.xy = vertPos * 2 - 1;
         output.positionCS.w = 1;

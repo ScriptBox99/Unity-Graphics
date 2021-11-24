@@ -3,6 +3,7 @@
 
 #include "Packages/com.unity.render-pipelines.core/Runtime/GeometryPool/Resources/GeometryPool.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightLoop/LightLoop.cs.hlsl"
 
 TEXTURE2D_X_UINT(_VisBufferTexture0);
 TEXTURE2D_X_UINT(_VisBufferTexture1);
@@ -27,12 +28,11 @@ struct VisibilityData
     uint batchID;
 };
 
-float3 DebugVisIndexToRGB(uint index)
+float3 DebugVisIndexToRGB(uint index, uint maxCol = 512)
 {
     if (index == 0)
         return float3(0, 0, 0);
 
-    uint maxCol = 512;
     float indexf = sin(816.0f * (index % maxCol)) * 2.0;
     {
         indexf = frac(indexf * 0.011);
@@ -126,6 +126,17 @@ uint LoadBucketTile(uint2 tileCoord)
 float PackDepthMaterialKey(uint materialGPUBatchKey)
 {
     return float(materialGPUBatchKey & 0xffffff) / (float)0xffffff;
+}
+
+uint GetLightTileCategory(uint featureFlags)
+{
+    if ((featureFlags & VBUFFER_LIGHTING_FEATURES_ENV) !=0 && (featureFlags & ~VBUFFER_LIGHTING_FEATURES_ENV) == 0)
+        return LIGHTVBUFFERTILECATEGORY_ENV;
+    if ((featureFlags & VBUFFER_LIGHTING_FEATURES_ENV_PUNCTUAL) !=0 && (featureFlags & ~VBUFFER_LIGHTING_FEATURES_ENV_PUNCTUAL) == 0)
+        return LIGHTVBUFFERTILECATEGORY_ENV_PUNCTUAL;
+    if ((featureFlags & VBUFFER_LIGHTING_FEATURES_EVERYTHING) !=0 && (featureFlags & ~VBUFFER_LIGHTING_FEATURES_EVERYTHING) == 0)
+        return LIGHTVBUFFERTILECATEGORY_EVERYTHING;
+    return LIGHTVBUFFERTILECATEGORY_UNKNOWN;
 }
 
 }

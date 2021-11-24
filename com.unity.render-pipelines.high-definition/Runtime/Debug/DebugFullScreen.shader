@@ -364,7 +364,14 @@ Shader "Hidden/HDRP/DebugFullScreen"
                     #ifdef DOTS_INSTANCING_ON
                     uint2 tileCoord = Visibility::GetTileCoord(input.positionCS.xy);
                     if (_FullScreenDebugMode == FULLSCREENDEBUGMODE_VISIBILITY_FEATURE_TILE)
-                        debugIndex = Visibility::LoadFeatureTile(tileCoord);
+                    {
+                        bool validTile = Visibility::LoadMaterialTile(tileCoord).y != 0;
+                        if (validTile)
+                        {
+                            uint tileFeatures = Visibility::LoadFeatureTile(tileCoord);
+                            debugIndex = Visibility::GetLightTileCategory(tileFeatures) + 1;
+                        }
+                    }
                     else if (_FullScreenDebugMode == FULLSCREENDEBUGMODE_VISIBILITY_MATERIALS_TILE)
                         debugIndex = Visibility::LoadMaterialTile(tileCoord).y; //max is more interesting
                     else if (_FullScreenDebugMode == FULLSCREENDEBUGMODE_VISIBILITY_BUCKET_ID)

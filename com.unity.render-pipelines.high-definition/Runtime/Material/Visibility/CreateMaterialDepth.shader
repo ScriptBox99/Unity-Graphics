@@ -48,6 +48,7 @@ Shader "Hidden/HDRP/CreateMaterialDepth"
         void Frag(Varyings input, out float outDepth : SV_Depth)
         {
             Visibility::VisibilityData visData = Visibility::LoadVisibilityData(input.positionCS.xy);
+            outDepth = 0.0f;
             if (!visData.valid)
             {
                 clip(-1);

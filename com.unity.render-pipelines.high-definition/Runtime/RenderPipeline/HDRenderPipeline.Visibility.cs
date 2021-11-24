@@ -344,8 +344,6 @@ namespace UnityEngine.Rendering.HighDefinition
                 passData.vBufferResources = vBufferResources.Read(builder);
 
                 passData.createMaterialTile = defaultResources.shaders.vbufferTileClassificationCS;
-                //TODO: fix
-                //passData.instancedDataBuffer = renderGraph.ImportComputeBuffer(InstanceVDataB);
 
                 passData.actualWidth = hdCamera.actualWidth;
                 passData.actualHeight = hdCamera.actualHeight;
@@ -451,14 +449,13 @@ namespace UnityEngine.Rendering.HighDefinition
                         context.cmd.SetViewport(new Rect(0, 0, numTileX * quadTileSize, numTileY * quadTileSize));
 
                         CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_ENV", false);
-                        CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_ENV", false);
                         CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_PUNCTUAL_ENV", false);
                         CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_PUNCTUAL_AREA_ENV", true);
                         DrawOpaqueRendererList(context, data.frameSettings, data.rendererList0);
 
+                        CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_ENV", true);
                         CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_PUNCTUAL_ENV", false);
                         CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_PUNCTUAL_AREA_ENV", false);
-                        CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_ENV", true);
                         DrawOpaqueRendererList(context, data.frameSettings, data.rendererList1);
 
                         CoreUtils.SetKeyword(context.cmd, "VARIANT_DIR_ENV", false);
