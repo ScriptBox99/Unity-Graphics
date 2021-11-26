@@ -119,7 +119,7 @@ namespace UnityEditor.Rendering.HighDefinition.ShaderGraph
             {
                 generatesPreview = false,
                 passes = GetPasses(),
-                usePassList = new List<string>() {"HDRP/RayTracingDebug/DebugDXR"}
+                usePassList = new List<string>() { "HDRP/RayTracingDebug/DebugDXR" }
             };
 
             PassCollection GetPasses()
